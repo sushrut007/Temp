@@ -1,0 +1,66 @@
+class Fan
+{
+ private int pitchNumber = 0;
+ public Fan(Ball ball) => ball.BallInPlay += BallInPlayEventHandler;
+ void BallInPlayEventHandler(object sender, EventArgs e)
+ {
+ pitchNumber++;
+ if (e is BallEventArgs ballEventArgs)
+ {
+ if (ballEventArgs.Distance > 400 && ballEventArgs.Angle > 30)
+ Console.WriteLine($"Pitch #{pitchNumber}: Home run! I’m going for the ball!");
+ else
+ Console.WriteLine($"Pitch #{pitchNumber}: Woo-hoo! Yeah!");
+ }
+ }}
+
+class Program
+{
+ static readonly Ball ball = new Ball();
+ static readonly Pitcher pitcher = new Pitcher(ball);
+ static readonly Fan fan = new Fan(ball);
+ static void Main(string[] args)
+ {
+ var running = true;
+ while (running)
+ {
+ Console.Write("Enter a number for the angle (or anything else to quit): ");
+ if (int.TryParse(Console.ReadLine(), out int angle))
+ {
+ Console.Write("Enter a number for the distance (or anything else to quit): ");
+ if (int.TryParse(Console.ReadLine(), out int distance))
+ {
+ BallEventArgs ballEventArgs = new BallEventArgs(angle, distance);
+ ball.OnBallInPlay(ballEventArgs);
+ }
+ else
+ running = false;
+ }
+ else
+ running = false;
+ }
+ Console.WriteLine("Thanks for playing!");
+ }
+}
+
+Pool puzzle 
+class RedNose
+{
+ public event EventHandler <string> Honk ;
+ public void OnHonk (string noise, string fun) => 
+ Honk ?. Invoke (this, $"Fin{noise} {fun}");
+}
+class Program
+{
+ static void Main(string[] args)
+ {
+ Func < string , string > evil = (string s) => $"{s}ming t{s}";
+ Func < string , string, string > kill = (string x, string y) => $"{y}{x}";
+ Func < string , string> slice = (string q) => " " + q;
+ Action < string > terrify = (string s) => Console.WriteLine(s);
+ EventHandler < string > laugh = ( object sender, string e) => terrify(e);
+ var laughter = new RedNose ();
+ laughter.Honk += laugh;
+ laughter. OnHonk (kill(evil("o"), "gers is c"), kill(slice("you"), "get"));
+ }
+}
